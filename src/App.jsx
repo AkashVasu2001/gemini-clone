@@ -1,6 +1,5 @@
 import "./App.css";
-import LoginPage from "./pages/login";
-import DashboardPage from "./features/Sidebar"
+import LoginPage from "./pages/Login";
 import ChatroomPage from './pages/ChatroomPage';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
