@@ -1,0 +1,20 @@
+import "./App.css";
+import LoginPage from "./pages/login";
+import DashboardPage from "./features/Sidebar"
+import ChatroomPage from './pages/ChatroomPage';
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+function App() {
+  return (
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/chat/:id" element={<ChatroomPage />} />
+        </Routes>
+      </Router>
+    </>
+  );
+}
+
+export default App;
