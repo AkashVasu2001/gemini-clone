@@ -1,19 +1,43 @@
 import { useParams } from "react-router-dom";
 import { useChatStore } from "../store/chatStore";
-import { useState, useEffect, useRef,useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Sidebar from "../features/Sidebar";
 import { toast } from "react-toastify";
 import { FiCopy, FiPlus } from "react-icons/fi";
 
+const geminiReplies = [
+  `That's a really interesting thought! To approach this properly, we need to break it down into smaller pieces. First, consider the core problem you're trying to solve — is it technical, conceptual, or strategic? Once we have clarity on that, we can start identifying potential solutions. I’d love to dive deeper if you share more context.`,
+
+  `Great question. Let's think about this logically: every complex system starts with a simple foundation. The trick is understanding how the building blocks fit together. Whether it’s a coding problem, a product decision, or a design challenge, the key is to work backward from the outcome you want and test small pieces along the way.`,
+
+  `You're definitely on the right track! But there might be a couple of nuances worth exploring. For example, have you considered how this scales or performs under edge cases? These little details can really shape the outcome. I can also help visualize the logic or suggest best practices if you’d like.`,
+
+  `Interesting! Here’s what I’d suggest: try rephrasing your problem in terms of inputs, expected outcomes, and possible blockers. This not only makes it easier to debug or plan, but also helps identify any assumptions that might be hiding in plain sight. If you’re stuck at a particular step, let’s zoom in there.`,
+
+  `That’s a classic scenario! Many developers/designers/strategists run into similar issues. A good starting point might be to look at how others solved this in similar contexts. For example, certain patterns repeat across projects — like debounce logic in frontend apps, or failover systems in backends. I can even walk you through a working example if you want.`,
+
+  `Let’s approach this like a mini strategy session. First, write down what success looks like. Then, identify the tools, libraries, or mental models that could help you reach that. Whether it’s React state management, content architecture, or performance optimization — there’s always a structured way forward.`,
+
+  `You’re thinking deeply — I like that. A lot of people skip over the planning stage and jump straight into code. But stepping back to ask, “What’s the best way to do this long term?” is what sets apart junior devs from senior ones. Let's explore a scalable, maintainable path forward.`,
+
+  `Let me expand on that. This reminds me of a common principle in software design: “favor composition over inheritance.” In other words, try to build things that are modular, testable, and easy to replace. It might seem like overkill now, but future-you will thank you when the project grows.`,
+
+  `What you’ve described is actually a great use case for a pattern like the observer, pub-sub, or even state machines depending on complexity. It depends a bit on whether the changes are local to one component or shared across many. If you describe your component flow, I’ll help you choose the right tool.`,
+
+  `Let’s break this down step by step. First: what is the input to your function/system/page? Second: what transformation happens? Third: what should the final result be? Thinking in this structure makes even complex ideas feel manageable. It’s a powerful debugging and design approach.`
+];
+
 export default function ChatroomPage() {
   const { id } = useParams(); // from URL /chat/:id
   const { chatrooms } = useChatStore();
-  console.log(chatrooms)
+  console.log(chatrooms);
   const chatroom = chatrooms.find((c) => c.id === id);
   const [imageFile, setImageFile] = useState([]);
- const { messagesByRoom, addMessage } = useChatStore();
-const messages = useMemo(() => messagesByRoom[id] || [], [messagesByRoom, id]);
-
+  const { messagesByRoom, addMessage } = useChatStore();
+  const messages = useMemo(
+    () => messagesByRoom[id] || [],
+    [messagesByRoom, id]
+  );
 
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -29,32 +53,33 @@ const messages = useMemo(() => messagesByRoom[id] || [], [messagesByRoom, id]);
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
- const sendMessage = () => {
-  if (!input.trim()) return;
+  const sendMessage = () => {
+    if (!input.trim()) return;
 
-  const userMessage = {
-    from: "user",
-    text: input.trim(),
-    image: imageFile,
-    timestamp: new Date().toLocaleTimeString(),
-  };
-
-  addMessage(id, userMessage);
-  setInput("");
-  setImageFile([]);
-  setIsTyping(true);
-
-  setTimeout(() => {
-    const aiReply = {
-      from: "gemini",
-      text: userMessage.text,
+    const userMessage = {
+      from: "user",
+      text: input.trim(),
+      image: imageFile,
       timestamp: new Date().toLocaleTimeString(),
     };
-    addMessage(id, aiReply);
-    setIsTyping(false);
-  }, 1500);
-};
 
+    addMessage(id, userMessage);
+    setInput("");
+    setImageFile([]);
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * geminiReplies.length);
+      const aiReply = {
+        from: "gemini",
+        text: geminiReplies[randomIndex],
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      addMessage(id, aiReply);
+      setIsTyping(false);
+    }, 1500);
+  };
 
   if (!chatroom) return <p>Chatroom not found</p>;
 
@@ -84,7 +109,7 @@ const messages = useMemo(() => messagesByRoom[id] || [], [messagesByRoom, id]);
               }`}
             >
               <div className="relative">
-                {hoveredIndex === index &&  (
+                {hoveredIndex === index && (
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(msg.text);
