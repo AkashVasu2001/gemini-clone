@@ -24,13 +24,12 @@ const geminiReplies = [
 
   `What you’ve described is actually a great use case for a pattern like the observer, pub-sub, or even state machines depending on complexity. It depends a bit on whether the changes are local to one component or shared across many. If you describe your component flow, I’ll help you choose the right tool.`,
 
-  `Let’s break this down step by step. First: what is the input to your function/system/page? Second: what transformation happens? Third: what should the final result be? Thinking in this structure makes even complex ideas feel manageable. It’s a powerful debugging and design approach.`
+  `Let’s break this down step by step. First: what is the input to your function/system/page? Second: what transformation happens? Third: what should the final result be? Thinking in this structure makes even complex ideas feel manageable. It’s a powerful debugging and design approach.`,
 ];
 
 export default function ChatroomPage() {
   const { id } = useParams(); // from URL /chat/:id
-  const { chatrooms } = useChatStore();
-  console.log(chatrooms);
+  const { chatrooms, editChatroomTitle } = useChatStore();
   const chatroom = chatrooms.find((c) => c.id === id);
   const [imageFile, setImageFile] = useState([]);
   const { messagesByRoom, addMessage } = useChatStore();
@@ -42,6 +41,8 @@ export default function ChatroomPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const endRef = useRef(null);
+  const [newTitle, setNewTitle] = useState(chatroom.title);
+  const [edit, setEdit] = useState(false);
   const [push, setPush] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const fileInputRef = useRef();
@@ -81,6 +82,27 @@ export default function ChatroomPage() {
     }, 1500);
   };
 
+  const handleNewTitleSubmit = (e) => {
+    e.preventDefault()
+     if (newTitle === chatroom.title) {
+    setEdit(false);
+    return;
+  }
+    editChatroomTitle(id, newTitle);
+    setEdit(false);
+  };
+useEffect(() => {
+  const handler = (e) => {
+    if (e.key === "Escape") setEdit(false);
+  };
+  window.addEventListener("keydown", handler);
+  return () => window.removeEventListener("keydown", handler);
+}, []);
+  useEffect(() => {
+    setEdit(false)
+    setNewTitle(chatroom.title)
+  },[id])
+
   if (!chatroom) return <p>Chatroom not found</p>;
 
   return (
@@ -92,9 +114,25 @@ export default function ChatroomPage() {
         }`}
       >
         <h1 className="text-xl font-semibold  text-gray-300">Gemni</h1>
-        <h1 className="text-md font-semibold mb-4 text-gray-500">
-          {chatroom.title}
-        </h1>
+        {!edit && (
+          <h1
+            onClick={() => setEdit(true)}
+            className="text-md font-semibold mb-4 text-gray-500"
+          >
+            {chatroom.title}
+          </h1>
+        )}
+        {edit && (
+          <form onSubmit={handleNewTitleSubmit}>
+            <input
+              type="text"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="w-40 pr-2 pl-2 pt-0.5 pb-0.5 outline-none border-b-2  border-gray-300 text-gray-900 rounded-md focus:ring-primary-600 focus:border-primary-600   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 placeholder:text-sm dark:text-white dark:focus:ring-blue-500 "
+              autoFocus
+            />
+          </form>
+        )}
 
         <div className="flex-1 pr-9 pl-7 overflow-y-auto space-y-2 mb-4 max-h-[calc(100vh-185px)] scrollbar-thin hide-scroll-arrows scrollbar-thumb-gray-400 scrollbar-track-transparent ">
           {messages.map((msg, index) => (
