@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useChatStore } from "../store/chatStore";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Sidebar from "../features/Sidebar";
 import { toast } from "react-toastify";
 import { FiCopy, FiPlus } from "react-icons/fi";
@@ -93,7 +93,9 @@ export default function ChatroomPage() {
   };
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === "Escape") setEdit(false);
+      if (e.key === "Escape") {
+        setEdit(false);
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -101,13 +103,16 @@ export default function ChatroomPage() {
   useEffect(() => {
     setEdit(false);
     setNewTitle(chatroom.title);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
+  const memoizedSetPush = useCallback((val) => {
+    setPush(val);
+  }, []);
   if (!chatroom) return <p>Chatroom not found</p>;
 
   return (
     <div className="min-h-screen  flex flex-col md:flex-row  bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Sidebar push={push} setPush={setPush} />
+      <Sidebar push={push} setPush={memoizedSetPush} />
       <div
         className={`flex-1 flex flex-col p-4  ${
           push ? "ml-9 md:ml-64" : "ml-9 md:ml-12"

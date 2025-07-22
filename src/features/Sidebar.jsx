@@ -2,7 +2,7 @@ import { useChatStore } from "../store/chatStore";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+//import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar({setPush}) {
   const { chatrooms, addChatrooms, deleteChatrooms } = useChatStore();
@@ -24,7 +24,7 @@ export default function Sidebar({setPush}) {
   useEffect(() => {
     if (open) setPush(true)
     else setPush(false)
-  },[open])
+  },[open,setPush])
   const handleCreate = () => {
     if (!newChatroom.trim()) return;
     addChatrooms(newChatroom.trim());
