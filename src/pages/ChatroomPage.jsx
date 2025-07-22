@@ -83,25 +83,25 @@ export default function ChatroomPage() {
   };
 
   const handleNewTitleSubmit = (e) => {
-    e.preventDefault()
-     if (newTitle === chatroom.title) {
-    setEdit(false);
-    return;
-  }
+    e.preventDefault();
+    if (newTitle === chatroom.title) {
+      setEdit(false);
+      return;
+    }
     editChatroomTitle(id, newTitle);
     setEdit(false);
   };
-useEffect(() => {
-  const handler = (e) => {
-    if (e.key === "Escape") setEdit(false);
-  };
-  window.addEventListener("keydown", handler);
-  return () => window.removeEventListener("keydown", handler);
-}, []);
   useEffect(() => {
-    setEdit(false)
-    setNewTitle(chatroom.title)
-  },[id])
+    const handler = (e) => {
+      if (e.key === "Escape") setEdit(false);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+  useEffect(() => {
+    setEdit(false);
+    setNewTitle(chatroom.title);
+  }, [id]);
 
   if (!chatroom) return <p>Chatroom not found</p>;
 
